@@ -1,0 +1,14 @@
+# Local skill search index — runtime dependencies
+# Python 3.11+ (uses stdlib sqlite3 with FTS5 + trigram tokenizer)
+
+# YAML frontmatter parsing for SKILL.md
+PyYAML>=6.0,<7.0
+
+# Analysis & visualization
+openai>=1.0.0          # embedding API
+numpy>=1.24.0          # vector computation
+scipy>=1.10.0          # statistical tests
+scikit-learn>=1.3.0    # DBSCAN, cosine_similarity
+matplotlib>=3.7.0      # charts
+seaborn>=0.12.0        # statistical plots
+tqdm>=4.65.0           # progress bars
