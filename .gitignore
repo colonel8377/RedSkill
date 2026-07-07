@@ -2,3 +2,6 @@
 /data/charts/
 data/skills.db
 /.claude/
+__pycache__/
+.DS_Store
+.idea/
