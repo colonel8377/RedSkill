@@ -59745,13 +59745,6 @@
         "jaccard": 1.0
       },
       {
-        "ident1": "opc-fa-skill-pro",
-        "name1": "huanzhi-fa-skill-pro",
-        "ident2": "opc-skill-fa",
-        "name2": "huanzhi-fa-skill-pro",
-        "jaccard": 1.0
-      },
-      {
         "ident1": "ponytail",
         "name1": "ponytail",
         "ident2": "ponytailaudit",
@@ -71316,6 +71309,13 @@
         "jaccard": 1.0
       },
       {
+        "ident1": "ai5gai5g-13",
+        "name1": "校园专属小物DIY生成器",
+        "ident2": "ai5gai5g-6",
+        "name2": "校园专属小物DIY生成器",
+        "jaccard": 0.9922
+      },
+      {
         "ident1": "guizang-social-card-skill-main",
         "name1": "guizang-social-card-skill",
         "ident2": "guizang-social-card-skill",
@@ -71330,31 +71330,45 @@
         "jaccard": 0.9922
       },
       {
-        "ident1": "ai5gai5g-13",
-        "name1": "校园专属小物DIY生成器",
-        "ident2": "ai5gai5g-6",
-        "name2": "校园专属小物DIY生成器",
-        "jaccard": 0.9844
-      },
-      {
-        "ident1": "seedance-mini-ugc-video-prompt-optimizer",
-        "name1": "Oumomo Seedance Prompt Optimizer for TikTok UGC",
-        "ident2": "seedance-prompt-optimizer-by-oumomo",
-        "name2": "seedance-prompt-optimizer-by-oumomo",
-        "jaccard": 0.9844
-      },
-      {
         "ident1": "improve",
         "name1": "improve",
         "ident2": "self-improvement",
         "name2": "self-improvement",
-        "jaccard": 0.9688
+        "jaccard": 0.9922
+      },
+      {
+        "ident1": "opc-fa-skill-pro",
+        "name1": "huanzhi-fa-skill-pro",
+        "ident2": "opc-skill-fa",
+        "name2": "huanzhi-fa-skill-pro",
+        "jaccard": 0.9922
       },
       {
         "ident1": "self-improvement",
         "name1": "self-improvement",
         "ident2": "selfimprovement0526test02",
         "name2": "self-improvement",
+        "jaccard": 0.9922
+      },
+      {
+        "ident1": "wj-continuous-learning-v2",
+        "name1": "WJ-持续学习",
+        "ident2": "wj-gateway-watchdog",
+        "name2": "WJ-网关监控",
+        "jaccard": 0.9766
+      },
+      {
+        "ident1": "wj-cost-tracking",
+        "name1": "WJ-成本追踪",
+        "ident2": "wj-gateway-watchdog",
+        "name2": "WJ-网关监控",
+        "jaccard": 0.9766
+      },
+      {
+        "ident1": "2026070502",
+        "name1": "pptx",
+        "ident2": "powerpoint",
+        "name2": "powerpoint",
         "jaccard": 0.9688
       },
       {
@@ -71365,15 +71379,15 @@
         "jaccard": 0.9688
       },
       {
-        "ident1": "wj-continuous-learning-v2",
-        "name1": "WJ-持续学习",
+        "ident1": "wj-cost-tracking",
+        "name1": "WJ-成本追踪",
         "ident2": "wj-prompt-optimizer",
         "name2": "WJ-提示词优化",
         "jaccard": 0.9688
       },
       {
-        "ident1": "wj-cost-tracking",
-        "name1": "WJ-成本追踪",
+        "ident1": "wj-gateway-watchdog",
+        "name1": "WJ-网关监控",
         "ident2": "wj-prompt-optimizer",
         "name2": "WJ-提示词优化",
         "jaccard": 0.9688
@@ -71442,67 +71456,74 @@
         "jaccard": 0.9609
       },
       {
-        "ident1": "wj-continuous-learning-v2",
-        "name1": "WJ-持续学习",
-        "ident2": "wj-macos-computer-use",
-        "name2": "WJ-Mac控制",
-        "jaccard": 0.9609
-      },
-      {
-        "ident1": "wj-cost-tracking",
-        "name1": "WJ-成本追踪",
-        "ident2": "wj-macos-computer-use",
-        "name2": "WJ-Mac控制",
-        "jaccard": 0.9609
-      },
-      {
-        "ident1": "wj-macos-computer-use",
-        "name1": "WJ-Mac控制",
-        "ident2": "wj-prompt-optimizer",
-        "name2": "WJ-提示词优化",
+        "ident1": "seedance-mini-ugc-video-prompt-optimizer",
+        "name1": "Oumomo Seedance Prompt Optimizer for TikTok UGC",
+        "ident2": "seedance-prompt-optimizer-by-oumomo",
+        "name2": "seedance-prompt-optimizer-by-oumomo",
         "jaccard": 0.9609
       },
       {
         "ident1": "wj-continuous-learning-v2",
         "name1": "WJ-持续学习",
-        "ident2": "wj-gateway-watchdog",
-        "name2": "WJ-网关监控",
-        "jaccard": 0.9531
-      },
-      {
-        "ident1": "wj-cost-tracking",
-        "name1": "WJ-成本追踪",
-        "ident2": "wj-gateway-watchdog",
-        "name2": "WJ-网关监控",
-        "jaccard": 0.9531
-      },
-      {
-        "ident1": "wj-gateway-watchdog",
-        "name1": "WJ-网关监控",
         "ident2": "wj-prompt-optimizer",
         "name2": "WJ-提示词优化",
-        "jaccard": 0.9531
+        "jaccard": 0.9609
       },
       {
         "ident1": "obsidian-kb-agent",
         "name1": "Obsidian 知识库助手",
         "ident2": "obsidian-notebook-agent",
         "name2": "Obsidian 知识库助手",
+        "jaccard": 0.9531
+      },
+      {
+        "ident1": "wj-continuous-learning-v2",
+        "name1": "WJ-持续学习",
+        "ident2": "wj-decision-dashboard-design",
+        "name2": "WJ-决策仪表盘",
+        "jaccard": 0.9531
+      },
+      {
+        "ident1": "wj-decision-dashboard-design",
+        "name1": "WJ-决策仪表盘",
+        "ident2": "wj-gateway-watchdog",
+        "name2": "WJ-网关监控",
+        "jaccard": 0.9531
+      },
+      {
+        "ident1": "guizang-social-card-skill-main",
+        "name1": "guizang-social-card-skill",
+        "ident2": "guizang-socialcard-skill",
+        "name2": "guizang-social-card-skill",
         "jaccard": 0.9453
       },
       {
-        "ident1": "wj-gateway-watchdog",
-        "name1": "WJ-网关监控",
-        "ident2": "wj-macos-computer-use",
-        "name2": "WJ-Mac控制",
+        "ident1": "guizang-socialcard-skill",
+        "name1": "guizang-social-card-skill",
+        "ident2": "one-one",
+        "name2": "guizang-social-card-skill",
         "jaccard": 0.9453
       },
       {
-        "ident1": "52133",
-        "name1": "ian-xiaohei-illustrations",
-        "ident2": "xiaoheiskills",
-        "name2": "ian-xiaohei-illustrations",
-        "jaccard": 0.9297
+        "ident1": "wj-cost-tracking",
+        "name1": "WJ-成本追踪",
+        "ident2": "wj-decision-dashboard-design",
+        "name2": "WJ-决策仪表盘",
+        "jaccard": 0.9453
+      },
+      {
+        "ident1": "guizang-social-card-skill",
+        "name1": "guizang-social-card-skill",
+        "ident2": "guizang-socialcard-skill",
+        "name2": "guizang-social-card-skill",
+        "jaccard": 0.9375
+      },
+      {
+        "ident1": "wj-decision-dashboard-design",
+        "name1": "WJ-决策仪表盘",
+        "ident2": "wj-prompt-optimizer",
+        "name2": "WJ-提示词优化",
+        "jaccard": 0.9375
       },
       {
         "ident1": "skill-creator-0522",
@@ -71589,134 +71610,71 @@
         "jaccard": 0.9297
       },
       {
-        "ident1": "wj-continuous-learning-v2",
-        "name1": "WJ-持续学习",
-        "ident2": "wj-decision-dashboard-design",
-        "name2": "WJ-决策仪表盘",
-        "jaccard": 0.9297
-      },
-      {
-        "ident1": "wj-continuous-learning-v2",
-        "name1": "WJ-持续学习",
-        "ident2": "wj-openclaw-troubleshooting",
-        "name2": "WJ-OC诊断",
-        "jaccard": 0.9297
-      },
-      {
-        "ident1": "wj-cost-tracking",
-        "name1": "WJ-成本追踪",
-        "ident2": "wj-openclaw-troubleshooting",
-        "name2": "WJ-OC诊断",
-        "jaccard": 0.9297
-      },
-      {
-        "ident1": "wj-cross-harness-skill-adaptation",
-        "name1": "WJ-跨框架适配",
-        "ident2": "wj-skill-optimization-loop",
-        "name2": "WJ-Skill优化",
-        "jaccard": 0.9297
-      },
-      {
-        "ident1": "wj-cost-tracking",
-        "name1": "WJ-成本追踪",
-        "ident2": "wj-decision-dashboard-design",
-        "name2": "WJ-决策仪表盘",
-        "jaccard": 0.9219
-      },
-      {
-        "ident1": "wj-decision-dashboard-design",
-        "name1": "WJ-决策仪表盘",
-        "ident2": "wj-macos-computer-use",
-        "name2": "WJ-Mac控制",
-        "jaccard": 0.9219
-      },
-      {
-        "ident1": "wj-decision-dashboard-design",
-        "name1": "WJ-决策仪表盘",
-        "ident2": "wj-prompt-optimizer",
-        "name2": "WJ-提示词优化",
-        "jaccard": 0.9219
-      },
-      {
-        "ident1": "wj-macos-computer-use",
-        "name1": "WJ-Mac控制",
-        "ident2": "wj-mcp-troubleshooting",
-        "name2": "WJ-MCP诊断",
-        "jaccard": 0.9219
-      },
-      {
-        "ident1": "wj-openclaw-troubleshooting",
-        "name1": "WJ-OC诊断",
-        "ident2": "wj-prompt-optimizer",
-        "name2": "WJ-提示词优化",
-        "jaccard": 0.9219
-      },
-      {
-        "ident1": "2026070502",
-        "name1": "pptx",
-        "ident2": "powerpoint",
-        "name2": "powerpoint",
-        "jaccard": 0.9141
-      },
-      {
-        "ident1": "coolcat2000---zh-writing-distill---distill-humanized",
-        "name1": "distill-humanized",
-        "ident2": "coolcat2000---zh-writing-distill---distill",
-        "name2": "distill",
-        "jaccard": 0.9141
-      },
-      {
         "ident1": "weread-skills",
         "name1": "weread-skills",
         "ident2": "weread",
         "name2": "weread-skills",
-        "jaccard": 0.9141
+        "jaccard": 0.9219
       },
       {
-        "ident1": "wj-macos-computer-use",
-        "name1": "WJ-Mac控制",
-        "ident2": "wj-openclaw-troubleshooting",
-        "name2": "WJ-OC诊断",
-        "jaccard": 0.9141
+        "ident1": "wj-gateway-watchdog",
+        "name1": "WJ-网关监控",
+        "ident2": "wj-macos-computer-use",
+        "name2": "WJ-Mac控制",
+        "jaccard": 0.9219
       },
       {
         "ident1": "better-japanese",
         "name1": "better-japanese",
         "ident2": "better-korean",
         "name2": "better-korean",
-        "jaccard": 0.9062
+        "jaccard": 0.9141
       },
       {
         "ident1": "wj-continuous-learning-v2",
         "name1": "WJ-持续学习",
-        "ident2": "wj-mcp-troubleshooting",
-        "name2": "WJ-MCP诊断",
-        "jaccard": 0.9062
+        "ident2": "wj-macos-computer-use",
+        "name2": "WJ-Mac控制",
+        "jaccard": 0.9141
+      },
+      {
+        "ident1": "wj-continuous-learning-v2",
+        "name1": "WJ-持续学习",
+        "ident2": "wj-openclaw-troubleshooting",
+        "name2": "WJ-OC诊断",
+        "jaccard": 0.9141
       },
       {
         "ident1": "wj-cost-tracking",
         "name1": "WJ-成本追踪",
-        "ident2": "wj-mcp-troubleshooting",
-        "name2": "WJ-MCP诊断",
-        "jaccard": 0.9062
-      },
-      {
-        "ident1": "wj-decision-dashboard-design",
-        "name1": "WJ-决策仪表盘",
-        "ident2": "wj-gateway-watchdog",
-        "name2": "WJ-网关监控",
-        "jaccard": 0.9062
+        "ident2": "wj-macos-computer-use",
+        "name2": "WJ-Mac控制",
+        "jaccard": 0.9141
       },
       {
         "ident1": "wj-gateway-watchdog",
         "name1": "WJ-网关监控",
         "ident2": "wj-openclaw-troubleshooting",
         "name2": "WJ-OC诊断",
+        "jaccard": 0.9141
+      },
+      {
+        "ident1": "wj-macos-computer-use",
+        "name1": "WJ-Mac控制",
+        "ident2": "wj-mcp-troubleshooting",
+        "name2": "WJ-MCP诊断",
+        "jaccard": 0.9141
+      },
+      {
+        "ident1": "wj-cost-tracking",
+        "name1": "WJ-成本追踪",
+        "ident2": "wj-openclaw-troubleshooting",
+        "name2": "WJ-OC诊断",
         "jaccard": 0.9062
       },
       {
-        "ident1": "wj-mcp-troubleshooting",
-        "name1": "WJ-MCP诊断",
+        "ident1": "wj-macos-computer-use",
+        "name1": "WJ-Mac控制",
         "ident2": "wj-prompt-optimizer",
         "name2": "WJ-提示词优化",
         "jaccard": 0.9062
@@ -72605,5 +72563,28 @@
       "size_bytes": 3630
     },
     "db_sha_coverage": 3630
+  },
+  "note_usage": {
+    "total": 3630,
+    "with_notes": 1,
+    "with_usage": 1,
+    "source_counts": {
+      "search_fallback": 1
+    },
+    "top_note_count": [
+      {
+        "identifier": "-genreport",
+        "name": "workplace-report",
+        "count": 1
+      }
+    ],
+    "top_usage_count": [
+      {
+        "identifier": "-genreport",
+        "name": "workplace-report",
+        "usage": 42
+      }
+    ],
+    "unmapped_count": 100
   }
 }

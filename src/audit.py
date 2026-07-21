@@ -586,8 +586,90 @@ def audit_manifest_raw(conn: sqlite3.Connection) -> dict:
 
 
 # ─────────────────────────────────────────
-# Summary
+# 10. Note / usage coverage
 # ─────────────────────────────────────────
+def audit_note_usage(conn: sqlite3.Connection) -> dict:
+    h("10. Note ID and Usage Coverage")
+
+    total = conn.execute("SELECT COUNT(*) FROM skills").fetchone()[0]
+    with_notes = conn.execute(
+        "SELECT COUNT(DISTINCT skill_identifier) FROM skill_notes"
+    ).fetchone()[0]
+    with_usage = conn.execute(
+        "SELECT COUNT(*) FROM skill_usage WHERE usage_count IS NOT NULL"
+    ).fetchone()[0]
+
+    line(f"**Skills with note mapping**: {with_notes} / {total} ({pct(with_notes, total)})")
+    line(f"**Skills with usage data**: {with_usage} / {total} ({pct(with_usage, total)})")
+    h("")
+
+    # By source
+    source_rows = conn.execute(
+        "SELECT source, COUNT(*) AS cnt FROM skill_notes GROUP BY source ORDER BY cnt DESC"
+    ).fetchall()
+    if source_rows:
+        h("Mapping sources")
+        table_rows = [[r["source"], str(r["cnt"]), pct(r["cnt"], with_notes)] for r in source_rows]
+        table(["Source", "Count", "% of Mapped"], table_rows)
+
+    # Top by note count
+    top_notes = conn.execute("""
+        SELECT s.identifier, s.name, COUNT(sn.note_id) AS note_count
+        FROM skills s
+        JOIN skill_notes sn ON sn.skill_identifier = s.identifier
+        GROUP BY s.identifier
+        ORDER BY note_count DESC, s.identifier
+        LIMIT 20
+    """).fetchall()
+    if top_notes:
+        h("Top skills by note count")
+        table(["Identifier", "Name", "Notes"], [
+            [r["identifier"][:50], r["name"][:40] or "(unnamed)", str(r["note_count"])]
+            for r in top_notes
+        ])
+
+    # Top by usage count
+    top_usage = conn.execute("""
+        SELECT s.identifier, s.name, su.usage_count
+        FROM skills s
+        JOIN skill_usage su ON su.skill_identifier = s.identifier
+        WHERE su.usage_count IS NOT NULL
+        ORDER BY su.usage_count DESC, s.identifier
+        LIMIT 20
+    """).fetchall()
+    if top_usage:
+        h("Top skills by usage count")
+        table(["Identifier", "Name", "Usage"], [
+            [r["identifier"][:50], r["name"][:40] or "(unnamed)", str(r["usage_count"])]
+            for r in top_usage
+        ])
+
+    # Unmapped
+    unmapped = conn.execute("""
+        SELECT identifier, name
+        FROM skills
+        WHERE identifier NOT IN (SELECT DISTINCT skill_identifier FROM skill_notes)
+        ORDER BY identifier
+        LIMIT 100
+    """).fetchall()
+    h("Unmapped skills (no note_id)")
+    line(f"**Count**: {len(unmapped)} shown (limit 100)")
+    if unmapped:
+        table(["Identifier", "Name"], [
+            [r["identifier"][:60], (r["name"] or "(unnamed)")[:50]]
+            for r in unmapped
+        ])
+
+    return {
+        "total": total,
+        "with_notes": with_notes,
+        "with_usage": with_usage,
+        "source_counts": {r["source"]: r["cnt"] for r in source_rows},
+        "top_note_count": [{"identifier": r["identifier"], "name": r["name"], "count": r["note_count"]} for r in top_notes],
+        "top_usage_count": [{"identifier": r["identifier"], "name": r["name"], "usage": r["usage_count"]} for r in top_usage],
+        "unmapped_count": len(unmapped),
+    }
+
 def audit_summary(all_results: dict) -> None:
     h("Summary", level=1)
     h("")
@@ -628,6 +710,11 @@ def audit_summary(all_results: dict) -> None:
     tc = all_results.get("tag_coverage", {})
     items.append(f"- **Skills with tags**: {tc.get('skills_with_tags', 0)} ({tc.get('unique_tags', 0)} unique tags)")
 
+    # Note / usage
+    nu = all_results.get("note_usage", {})
+    items.append(f"- **Skills with note mapping**: {nu.get('with_notes', 0)} / {nu.get('total', 0)}")
+    items.append(f"- **Skills with usage data**: {nu.get('with_usage', 0)} / {nu.get('total', 0)}")
+
     # Zip
     zc = all_results.get("zip_complexity", {})
     items.append(f"- **Single-file zips**: {zc.get('single_file_zips', 0)} / {zc.get('total_zips', 0)}")
@@ -663,6 +750,7 @@ def main(argv: list[str]) -> int:
     all_results["tag_coverage"] = audit_tags(conn)
     all_results["zip_complexity"] = audit_zip_complexity(conn)
     all_results["manifest_raw"] = audit_manifest_raw(conn)
+    all_results["note_usage"] = audit_note_usage(conn)
 
     # Summary
     audit_summary(all_results)

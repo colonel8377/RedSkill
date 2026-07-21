@@ -7,15 +7,23 @@ Usage:
     python crawl_redskills.py download [--workers 4]
     python crawl_redskills.py verify
     python crawl_redskills.py all --cookie "<cookie string>"
+    python crawl_redskills.py map-notes --cookie "<cookie string>"
+    python crawl_redskills.py fallback-notes --crawler <path> [--dry-run]
+    python crawl_redskills.py notes --identifier <id>
+    python crawl_redskills.py notes --note-id <note_id>
+    python crawl_redskills.py usage --identifier <id>
 
 All logic is delegated to src/{core,api,crawl,index} modules.
 """
 from __future__ import annotations
 
 import argparse
+import json
+import sqlite3
 import sys
+from pathlib import Path
 
-from src.core.config import DISCOVERED_PATH, DOWNLOADS_DIR, LOG_PATH, ROOT
+from src.core.config import DB_PATH, DISCOVERED_PATH, DOWNLOADS_DIR, LOG_PATH, ROOT
 from src.core.logging import log, set_log_path
 from src.crawl.discover import (
     discover_keyword_sweep,
@@ -25,6 +33,9 @@ from src.crawl.discover import (
 )
 from src.crawl.downloader import stage_download
 from src.crawl.verifier import stage_verify
+from src.crawl.note_mapper import map_notes_from_list
+from src.crawl.fallback_note_search import fallback_search as fallback_note_search
+from src.index.note_usage import get_notes_for_skill, get_usage_for_skill
 
 
 def cmd_discover(args) -> int:
@@ -79,6 +90,71 @@ def cmd_all(args) -> int:
     return 0
 
 
+def cmd_map_notes(args) -> int:
+    if not args.cookie:
+        log("map-notes requires --cookie")
+        return 2
+    stats = map_notes_from_list(args.cookie)
+    log(f"map-notes done: {stats}")
+    return 0
+
+
+def cmd_fallback_notes(args) -> int:
+    if not args.crawler:
+        log("fallback-notes requires --crawler")
+        return 2
+    stats = fallback_note_search(
+        args.crawler,
+        db_path=args.db,
+        delay=args.delay,
+        dry_run=args.dry_run,
+        limit=args.limit,
+    )
+    log(f"fallback-notes done: {stats}")
+    return 0
+
+
+def cmd_notes(args) -> int:
+    conn = sqlite3.connect(str(args.db))
+    conn.row_factory = sqlite3.Row
+    if args.identifier:
+        rows = get_notes_for_skill(conn, args.identifier)
+        if not rows:
+            print(f"(no notes for {args.identifier})")
+        for r in rows:
+            print(f"{r['note_id']}  source={r['source']}  confidence={r['confidence']}  "
+                  f"skill={r['skill_identifier']}")
+        return 0
+    if args.note_id:
+        row = conn.execute(
+            "SELECT * FROM skill_notes WHERE note_id = ?", (args.note_id,)
+        ).fetchone()
+        if not row:
+            print(f"(no skill for note {args.note_id})")
+            return 1
+        print(f"note {row['note_id']} -> skill {row['skill_identifier']} "
+              f"source={row['source']} confidence={row['confidence']}")
+        return 0
+    log("notes requires --identifier or --note-id")
+    return 2
+
+
+def cmd_usage(args) -> int:
+    conn = sqlite3.connect(str(args.db))
+    row = get_usage_for_skill(conn, args.identifier)
+    if not row:
+        print(f"(no usage data for {args.identifier})")
+        return 1
+    print(f"usage for {args.identifier}:")
+    print(f"  usage_count:    {row['usage_count']}")
+    print(f"  download_count: {row['download_count']}")
+    print(f"  click_count:    {row['click_count']}")
+    print(f"  updated_at:     {row['updated_at']}")
+    if row["raw_json"]:
+        print(f"  raw: {row['raw_json']}")
+    return 0
+
+
 def main(argv: list[str]) -> int:
     p = argparse.ArgumentParser(description="RedSkill crawler")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -100,9 +176,33 @@ def main(argv: list[str]) -> int:
     p_all.add_argument("--workers", type=int, default=4)
     p_all.set_defaults(func=cmd_all)
 
+    p_map = sub.add_parser("map-notes", help="extract note_id/usage from list API")
+    p_map.add_argument("--cookie", required=True, help="login cookie string")
+    p_map.set_defaults(func=cmd_map_notes)
+
+    p_fb = sub.add_parser("fallback-notes", help="search notes by skill name via external crawler")
+    p_fb.add_argument("--crawler", required=True, help="path to crawler executable")
+    p_fb.add_argument("--db", type=Path, default=DB_PATH)
+    p_fb.add_argument("--delay", type=float, default=1.0)
+    p_fb.add_argument("--dry-run", action="store_true")
+    p_fb.add_argument("--limit", type=int, default=0)
+    p_fb.set_defaults(func=cmd_fallback_notes)
+
+    p_notes = sub.add_parser("notes", help="show note_id mapping for a skill or skill for a note")
+    p_notes.add_argument("--identifier", help="skill identifier")
+    p_notes.add_argument("--note-id", help="xiaohongshu note id")
+    p_notes.add_argument("--db", type=Path, default=DB_PATH)
+    p_notes.set_defaults(func=cmd_notes)
+
+    p_usage = sub.add_parser("usage", help="show usage metrics for a skill")
+    p_usage.add_argument("--identifier", required=True, help="skill identifier")
+    p_usage.add_argument("--db", type=Path, default=DB_PATH)
+    p_usage.set_defaults(func=cmd_usage)
+
     args = p.parse_args(argv)
     ROOT.mkdir(exist_ok=True)
     DOWNLOADS_DIR.mkdir(exist_ok=True)
+    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
     set_log_path(LOG_PATH)
     LOG_PATH.write_text("", encoding="utf-8")
     return args.func(args)

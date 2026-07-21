@@ -45,13 +45,18 @@ def human_size(n: int | None) -> str:
     return f"{n:.1f}TB"
 
 
-def search_keyword(conn: sqlite3.Connection, q: str, limit: int) -> list[sqlite3.Row]:
+def search_keyword(conn: sqlite3.Connection, q: str, limit: int, with_metrics: bool = False) -> list[sqlite3.Row]:
+    metrics_sql = """
+        , (SELECT COUNT(*) FROM skill_notes WHERE skill_identifier = s.identifier) AS note_count
+        , (SELECT usage_count FROM skill_usage WHERE skill_identifier = s.identifier) AS usage_count
+    """ if with_metrics else ""
     q = q.strip()
     if len(q) >= 3:
-        sql = """
+        sql = f"""
             SELECT s.id, s.identifier, s.name, s.description, s.author, s.category,
                    s.version, s.zip_path, s.zip_size,
                    bm25(skills_fts) AS score
+                   {metrics_sql}
             FROM skills_fts
             JOIN skills s ON s.id = skills_fts.rowid
             WHERE skills_fts MATCH ?
@@ -63,10 +68,11 @@ def search_keyword(conn: sqlite3.Connection, q: str, limit: int) -> list[sqlite3
         except sqlite3.OperationalError:
             pass
     pat = f"%{q}%"
-    sql = """
+    sql = f"""
         SELECT id, identifier, name, description, author, category,
                version, zip_path, zip_size,
                0.0 AS score
+               {metrics_sql.replace('s.identifier', 'identifier')}
         FROM skills
         WHERE name LIKE ? OR description LIKE ? OR identifier LIKE ?
         ORDER BY
@@ -85,6 +91,7 @@ def filter_rows(
     category: str | None,
     tag: str | None,
     limit: int,
+    with_metrics: bool = False,
 ) -> list[sqlite3.Row]:
     where = []
     params: list = []
@@ -97,9 +104,14 @@ def filter_rows(
     if tag:
         where.append("tags_json LIKE ?")
         params.append(f'%"{tag}"%')
+    metrics_sql = """
+        , (SELECT COUNT(*) FROM skill_notes WHERE skill_identifier = skills.identifier) AS note_count
+        , (SELECT usage_count FROM skill_usage WHERE skill_identifier = skills.identifier) AS usage_count
+    """ if with_metrics else ""
     sql = f"""
         SELECT id, identifier, name, description, author, category,
                version, zip_path, zip_size, 0.0 AS score
+               {metrics_sql}
         FROM skills
         {('WHERE ' + ' AND '.join(where)) if where else ''}
         ORDER BY name
@@ -109,7 +121,7 @@ def filter_rows(
     return conn.execute(sql, params).fetchall()
 
 
-def print_rows(rows: list[sqlite3.Row], verbose: bool) -> None:
+def print_rows(rows: list[sqlite3.Row], verbose: bool, with_metrics: bool = False) -> None:
     if not rows:
         print("(no results)")
         return
@@ -127,6 +139,11 @@ def print_rows(rows: list[sqlite3.Row], verbose: bool) -> None:
         if r["version"]:
             meta_bits.append(f"v={r['version']}")
         meta_bits.append(human_size(r["zip_size"]))
+        if with_metrics:
+            note_count = r["note_count"] if "note_count" in r.keys() else None
+            usage_count = r["usage_count"] if "usage_count" in r.keys() else None
+            meta_bits.append(f"notes={note_count or 0}")
+            meta_bits.append(f"usage={usage_count if usage_count is not None else '?'}")
         if verbose:
             meta_bits.append(r["zip_path"])
         if meta_bits:
@@ -207,6 +224,7 @@ def main(argv: list[str]) -> int:
     p.add_argument("--stats", action="store_true", help="print index stats")
     p.add_argument("--list-tags", action="store_true", help="print tag frequency table")
     p.add_argument("-v", "--verbose", action="store_true")
+    p.add_argument("--with-metrics", action="store_true", help="show note_count and usage_count")
     args = p.parse_args(argv)
 
     conn = connect()
@@ -220,24 +238,38 @@ def main(argv: list[str]) -> int:
     if args.show:
         return show_skill_md(conn, args.show)
     if args.identifier:
+        metrics_sql = """
+            , (SELECT COUNT(*) FROM skill_notes WHERE skill_identifier = skills.identifier) AS note_count
+            , (SELECT usage_count FROM skill_usage WHERE skill_identifier = skills.identifier) AS usage_count
+        """ if args.with_metrics else ""
         rows = conn.execute(
-            "SELECT id, identifier, name, description, author, category, "
-            "version, zip_path, zip_size, 0.0 AS score "
-            "FROM skills WHERE identifier = ?",
+            f"""
+            SELECT id, identifier, name, description, author, category,
+                   version, zip_path, zip_size, 0.0 AS score
+                   {metrics_sql}
+            FROM skills WHERE identifier = ?
+            """,
             (args.identifier,),
         ).fetchall()
-        print_rows(rows, args.verbose)
+        print_rows(rows, args.verbose, with_metrics=args.with_metrics)
         return 0
     if args.author or args.category or args.tag:
-        rows = filter_rows(conn, author=args.author, category=args.category, tag=args.tag, limit=args.limit)
-        print_rows(rows, args.verbose)
+        rows = filter_rows(
+            conn,
+            author=args.author,
+            category=args.category,
+            tag=args.tag,
+            limit=args.limit,
+            with_metrics=args.with_metrics,
+        )
+        print_rows(rows, args.verbose, with_metrics=args.with_metrics)
         return 0
     if not args.query:
         p.print_help()
         return 2
 
-    rows = search_keyword(conn, args.query, args.limit)
-    print_rows(rows, args.verbose)
+    rows = search_keyword(conn, args.query, args.limit, with_metrics=args.with_metrics)
+    print_rows(rows, args.verbose, with_metrics=args.with_metrics)
     return 0
 
 

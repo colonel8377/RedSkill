@@ -51,3 +51,26 @@ CREATE VIRTUAL TABLE IF NOT EXISTS skills_fts USING fts5(
     body,
     tokenize = 'trigram'
 );
+
+-- Note ID mapping: which xiaohongshu notes promote which skill.
+CREATE TABLE IF NOT EXISTS skill_notes (
+    note_id          TEXT PRIMARY KEY,
+    skill_identifier TEXT NOT NULL,
+    source           TEXT NOT NULL,  -- 'list_api' | 'search_fallback' | 'manual'
+    confidence       REAL,            -- 1.0 for official API; fallback = similarity score
+    discovered_at    TEXT,
+    raw_json         TEXT,
+    FOREIGN KEY (skill_identifier) REFERENCES skills(identifier)
+);
+CREATE INDEX IF NOT EXISTS idx_skill_notes_skill ON skill_notes(skill_identifier);
+
+-- Official usage / engagement metrics for skills.
+CREATE TABLE IF NOT EXISTS skill_usage (
+    skill_identifier TEXT PRIMARY KEY,
+    usage_count      INTEGER,
+    download_count   INTEGER,
+    click_count      INTEGER,
+    raw_json         TEXT,
+    updated_at       TEXT,
+    FOREIGN KEY (skill_identifier) REFERENCES skills(identifier)
+);

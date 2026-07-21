@@ -28,7 +28,17 @@ from src.core.config import ROOT
 from src.core.logging import log
 
 NODE_ID_MAP_PATH = ROOT / "data" / "note_id_map.json"
+USAGE_PATH = ROOT / "data" / "skill_usage.json"
 EXPLORATION_MD = ROOT / "data" / "api_exploration.md"
+
+NOTE_KEYS = [
+    "note_id", "noteId", "note_ids",
+    "post_id", "postId", "post_ids", "related_notes",
+]
+USAGE_KEYS = [
+    "usage_count", "usageCount", "use_count",
+    "download_count", "click_count", "call_count", "popularity",
+]
 
 
 def _inspect_skill(skill, label: str) -> None:
@@ -64,15 +74,13 @@ def cmd_explore(cookie: str) -> int:
     first = results[0]
     _inspect_skill(first, "First result (list API)")
 
-    # Look for note_id specifically
-    note_id_fields = []
-    for k, v in first.raw.items():
-        if "note" in k.lower() or "post" in k.lower() or "usage" in k.lower():
-            note_id_fields.append((k, v))
+    # Look for note_id / usage fields specifically
+    note_id_fields = [(k, raw[k]) for k in NOTE_KEYS if k in raw]
+    usage_fields = [(k, raw[k]) for k in USAGE_KEYS if k in raw]
 
     print("\n=== Note/Usage related fields ===")
-    if note_id_fields:
-        for k, v in note_id_fields:
+    if note_id_fields or usage_fields:
+        for k, v in note_id_fields + usage_fields:
             print(f"  {k}: {v}")
     else:
         print("  (no note_id, post_id, or usage_count fields found)")
@@ -81,12 +89,23 @@ def cmd_explore(cookie: str) -> int:
     lines = [
         "# API Exploration: list_published_skills",
         "",
-        f"## Raw fields (from first result)",
+        "## Raw fields (from first result)",
         "```",
     ]
     for k in sorted(first.raw.keys()):
         lines.append(f"  {k}: {type(first.raw[k]).__name__}")
     lines.append("```")
+    lines.append("")
+    lines.append("## Field detection list")
+    lines.append("Note keys checked:")
+    for k in NOTE_KEYS:
+        found = "yes" if k in raw else "no"
+        lines.append(f"- `{k}`: {found}")
+    lines.append("")
+    lines.append("Usage keys checked:")
+    for k in USAGE_KEYS:
+        found = "yes" if k in raw else "no"
+        lines.append(f"- `{k}`: {found}")
     lines.append("")
     lines.append("## Note ID Search")
     if note_id_fields:
@@ -94,7 +113,16 @@ def cmd_explore(cookie: str) -> int:
         for k, v in note_id_fields:
             lines.append(f"- `{k}`: {v}")
     else:
-        lines.append("**No note_id or usage_count fields found in list API response.**")
+        lines.append("**No note_id or post_id fields found in list API response.**")
+    lines.append("")
+    lines.append("## Usage/Engagement Search")
+    if usage_fields:
+        lines.append("Found usage-related fields!")
+        for k, v in usage_fields:
+            lines.append(f"- `{k}`: {v}")
+    else:
+        lines.append("**No usage_count, download_count, or click_count fields found.**")
+    if not note_id_fields and not usage_fields:
         lines.append("")
         lines.append("### Alternative approaches:")
         lines.append("1. Search for the skill name on xiaohongshu.com web interface")
@@ -105,10 +133,46 @@ def cmd_explore(cookie: str) -> int:
     return 0
 
 
+def _extract_note_ids(raw: dict) -> list[str]:
+    """Return all note/post IDs found in a raw skill dict."""
+    ids: list[str] = []
+    for key in NOTE_KEYS:
+        val = raw.get(key)
+        if not val:
+            continue
+        if isinstance(val, str) or isinstance(val, int):
+            ids.append(str(val))
+        elif isinstance(val, list):
+            for item in val:
+                if isinstance(item, dict):
+                    for sub in ("note_id", "id", "post_id", "noteId", "postId"):
+                        if item.get(sub):
+                            ids.append(str(item[sub]))
+                            break
+                elif item:
+                    ids.append(str(item))
+    return ids
+
+
+def _extract_usage(raw: dict) -> dict:
+    """Return usage numbers if any are present."""
+    usage: dict = {}
+    for key in USAGE_KEYS:
+        val = raw.get(key)
+        if val is None:
+            continue
+        try:
+            usage[key] = int(val)
+        except (ValueError, TypeError):
+            usage[key] = val
+    return usage
+
+
 def cmd_extract(cookie: str) -> int:
     """Extract full note_id -> identifier mapping from all pages."""
     log("Extracting note_id -> identifier mapping from all list pages...")
-    note_map = {}
+    note_map: dict[str, str | dict] = {}
+    usage_map: dict[str, dict] = {}
     page = 1
     empty_streak = 0
 
@@ -128,25 +192,28 @@ def cmd_extract(cookie: str) -> int:
 
         empty_streak = 0
         page_with_note = 0
+        page_with_usage = 0
         for s in results:
             raw = s.raw
-            # Try various possible note_id field names
-            note_id = (
-                raw.get("note_id")
-                or raw.get("noteId")
-                or raw.get("post_id")
-                or raw.get("postId")
-            )
-            if note_id:
-                note_map[str(note_id)] = s.identifier
+            note_ids = _extract_note_ids(raw)
+            for note_id in note_ids:
+                note_map[note_id] = s.identifier
                 page_with_note += 1
 
-            # Also check usage_count
-            usage = raw.get("usage_count") or raw.get("usageCount")
+            usage = _extract_usage(raw)
             if usage:
-                log(f"  Found usage_count: {usage} for {s.identifier}")
+                usage_map[s.identifier] = {
+                    "usage_count": usage.get("usage_count") or usage.get("usageCount") or usage.get("use_count"),
+                    "download_count": usage.get("download_count"),
+                    "click_count": usage.get("click_count") or usage.get("call_count"),
+                    "raw_json": json.dumps(usage, ensure_ascii=False),
+                }
+                page_with_usage += 1
 
-        log(f"Page {page}: {page_with_note}/{len(results)} have note_id, total map {len(note_map)}")
+        log(
+            f"Page {page}: notes={page_with_note}, usage={page_with_usage}/"
+            f"{len(results)}, total map {len(note_map)}"
+        )
         if len(results) < 100:
             break
         page += 1
@@ -157,12 +224,22 @@ def cmd_extract(cookie: str) -> int:
         )
         log(f"Saved {len(note_map)} note_id mappings -> {NODE_ID_MAP_PATH}")
     else:
-        log("No note_id found in any results. Writing documentation.")
+        log("No note_id found in any results.")
+
+    if usage_map:
+        USAGE_PATH.write_text(
+            json.dumps(usage_map, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+        log(f"Saved {len(usage_map)} usage records -> {USAGE_PATH}")
+    else:
+        log("No usage/engagement fields found.")
+
+    if not note_map and not usage_map:
         # Document the failure
         lines = [
-            "# note_id Extraction Failed",
+            "# note_id / usage extraction failed",
             "",
-            "The list_published_skills API did not return note_id in any of the skill objects.",
+            "The list_published_skills API did not return note_id or usage fields.",
             "",
             "## Fields observed across all skills:",
             "See api_exploration.md for field listing.",
@@ -173,8 +250,9 @@ def cmd_extract(cookie: str) -> int:
             "3. Manual mapping for top skills",
         ]
         EXPLORATION_MD.write_text("\n".join(lines), encoding="utf-8")
+        return 1
 
-    return 0 if note_map else 1
+    return 0
 
 
 def cmd_compare_search() -> int:
@@ -195,12 +273,13 @@ def cmd_compare_search() -> int:
     for i, s in enumerate(results):
         _inspect_skill(s, f"Search result {i+1}")
 
-        # Check for note_id fields
-        note_fields = {k: v for k, v in s.raw.items() if "note" in k.lower() or "post" in k.lower()}
-        if note_fields:
-            print(f"  NOTE FIELDS: {note_fields}")
+        # Check for note_id / usage fields
+        note_fields = {k: v for k, v in s.raw.items() if k in NOTE_KEYS}
+        usage_fields = {k: v for k, v in s.raw.items() if k in USAGE_KEYS}
+        if note_fields or usage_fields:
+            print(f"  NOTE/USAGE FIELDS: {note_fields} {usage_fields}")
         else:
-            print("  (no note/post fields)")
+            print("  (no note/post/usage fields)")
 
     return 0
 

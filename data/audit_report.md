@@ -79,7 +79,7 @@
 ## 3. Content Near-Duplicates (MinHash + Jaccard)
 
 **MinHash signatures**: 3630 skills
-**Pairs with Jaccard >= 90%**: 10202
+**Pairs with Jaccard >= 90%**: 10196
 
 
 | Identifier A | Name A | Identifier B | Name B | Jaccard |
@@ -115,7 +115,7 @@
 | codex-ppt-nzm | codex-ppt | codex-ppt | codex-ppt | 1.000 |
 | codex-ppt-nzm | codex-ppt | onetoly | codex-ppt | 1.000 |
 
-  ... and 10172 more pairs
+  ... and 10166 more pairs
 ## 4. Version Distribution
 
 | Version | Count | % of Total |
@@ -382,6 +382,136 @@
 
 **DB skills with sha256**: 3630 / 3630 (100.0%)
 *(raw data is already stored in manifest.json files; the `raw` key preserves the full API response)*
+## 10. Note ID and Usage Coverage
+
+**Skills with note mapping**: 1 / 3630 (0.0%)
+**Skills with usage data**: 1 / 3630 (0.0%)
+
+
+## Mapping sources
+
+| Source | Count | % of Mapped |
+|---|---|---|
+| search_fallback | 1 | 100.0% |
+
+## Top skills by note count
+
+| Identifier | Name | Notes |
+|---|---|---|
+| -genreport | workplace-report | 1 |
+
+## Top skills by usage count
+
+| Identifier | Name | Usage |
+|---|---|---|
+| -genreport | workplace-report | 42 |
+
+## Unmapped skills (no note_id)
+
+**Count**: 100 shown (limit 100)
+| Identifier | Name |
+|---|---|
+| -infographics | visual-note-infographics |
+| 000001 | (unnamed) |
+| 000011 | brainstorming |
+| 000012 | codex-workflow-crystallizer |
+| 0001 | paper-quick-reader |
+| 0001.0.0 | SKILL_NAME：电商好物合规测评文案生成技能 |
+| 0002 | job-board-coding |
+| 001 | infographic-creation |
+| 0011 | serenity-reply |
+| 001116 | (unnamed) |
+| 001226 | (unnamed) |
+| 0022 | leopold-mind |
+| 01 | duange-zero-skill-creator |
+| 011 | novel-writing-30-step |
+| 02 | elon-musk-perspective |
+| 0201 | content-research-writer |
+| 0356001 | 小红书 AI 人像氛围图提示词助手 |
+| 060726001 | red-skill |
+| 0610-01 | meeting-knowledge-hub |
+| 0626 | bazi |
+| 0703 | (unnamed) |
+| 0706 | (unnamed) |
+| 0caigc001 | football-facial-collage |
+| 0caigc002 | 世界杯确诊病例单 Skill｜办公室球星病·文案升级版 |
+| 1-2 | patent-disclosure-skill |
+| 1.0.0 | xhs-seed |
+| 10000 | professor-email-signal-analysis |
+| 10001 | (unnamed) |
+| 1001 | (unnamed) |
+| 10011001 | file-organizer |
+| 1006 | 小红书爆款笔记拆解大师 |
+| 1007 | 世界杯玄学预言家 |
+| 1009 | PDF小助手 |
+| 100srk001 | 手机电脑故障自诊助手 |
+| 1010 | 图片批量处理工具箱 |
+| 10101 | KA超级助理-商机调研 |
+| 1011 | 小红书封面 AI 生成器 · 杂志风版 |
+| 1012 | 视频批量处理工具箱 |
+| 1013 | 音频批量处理工具箱 |
+| 1014 | 文件批量重命名工具 |
+| 1015 | (unnamed) |
+| 1016 | (unnamed) |
+| 1018 | desktop-organizer |
+| 10x-advisor | 10x-advisor |
+| 11 | KA超级助理-CRM对接 |
+| 111 | KA超级助理-行业洞察 |
+| 1111 | hi-calendar |
+| 111111 | J人行程攻略 |
+| 1111999 | 情书生成器 |
+| 111222333zxc | outfit-stylist |
+| 123 | proactive-agent |
+| 123321123 | (unnamed) |
+| 12345 | akshare-stock |
+| 1234567 | tencentos-expert |
+| 12345678 | major-partnership-insider |
+| 123456789 | agnes-image-generator |
+| 123456789zxcvbnm | 角色 (Role) |
+| 123466788 | cocktail-advisor |
+| 13240457795 | longtail-topic-library |
+| 15554462 | humanizer |
+| 159515951 | 代码审查专家 |
+| 16676666766 | 跨境电商AI全流程Skill |
+| 1691 | (unnamed) |
+| 171827269yl | 🌍 {{destination}} 旅行攻略 |
+| 17pro | iphone-17-pro |
+| 19991226 | xiaoxin-illustrations |
+| 1qaz2wsx3edc4rfv | jianying-video-automation |
+| 2025-sanzhaoyifu-data-analyzer | 2025-sanzhaoyifu-data-analyzer |
+| 2026-06-08 | 内容创作者 Skill 合集 — 一键安装 |
+| 20260524 | guizang-ppt-skill |
+| 20260528 | ai-wechat-content-system |
+| 2026070310 | AI妆容推荐师（Beauty Advisor） |
+| 202607040001 | xiaohongshu-growth-consultant |
+| 2026070501 | frontend-design |
+| 2026070502 | pptx |
+| 20260706 | daily-construction-news |
+| 20261879310 | activity-host-sop |
+| 202674lhj | Agent Skills 编写规范 |
+| 2026bowenjiewanwu | wechat-official-account-rules |
+| 2121211 | pexels-photo-review |
+| 2163244379379208192 | capcut |
+| 22 | KA超级助理-报价单 |
+| 222 | text-condenser |
+| 2238 | excalidraw-diagram |
+| 2351179894 | editorial-minimal-furniture-poster |
+| 242419 | dbs-ai-check：AI 写作特征识别 |
+| 26070601docx | docx |
+| 27464 | word-to-ppt |
+| 27713591665-xhs-card-gen | xhs-card-generator |
+| 2p91suyb4kn8behnqot9grnhyt-z4y5v87wwdx9g4w4xca2jgbafl2ltdweh | 自照心理 · 技能总目 |
+| 3-prompt | renovation-entry-video-prompts |
+| 301415926 | time-traveler-survival |
+| 30688888 | 306 FITNESS 每日运动研究分享 Skill |
+| 33 | KA超级助理-持续监控 |
+| 3min-weekly-report | 大飒蜜儿·3分钟搞定周报 |
+| 3x3-to-ob-time-record-to-action | time-record-to-action |
+| 404design-skill-0001 | b2b-banner-21x9-single |
+| 404design-skill-0002 | seedance-commercial-video-prompt-zh |
+| 408planner | 408考研·四科一体规划助手 |
+| 4342345 | tencent-esign-contract |
+
 # Summary
 
 
@@ -389,10 +519,12 @@
 - **Total skills**: 3,630
 - **Lowest coverage fields**: discovered_at (0.0%), homepage (0.6%), category (1.0%)
 - **Name duplicates**: 565 skills share names with others
-- **Near-duplicate pairs (>=90% Jaccard)**: 10202
+- **Near-duplicate pairs (>=90% Jaccard)**: 10196
 - **Author Gini**: 0.6007
 - **Skills with version > 1.x**: 151
 - **Thin bodies (<200 chars)**: 336
 - **Rich bodies (>2000 chars)**: 2258
 - **Skills with tags**: 774 (907 unique tags)
+- **Skills with note mapping**: 1 / 3630
+- **Skills with usage data**: 1 / 3630
 - **Single-file zips**: 1258 / 3630
